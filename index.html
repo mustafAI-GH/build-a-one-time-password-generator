@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTP Generator</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- React + ReactDOM -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.development.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.development.min.js"></script>
+
+  <!-- Babel pour JSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.5/babel.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function OTPGenerator() {
+      const [otp, setOtp] = useState(null);
+      const [timeLeft, setTimeLeft] = useState(0);
+
+      useEffect(() => {
+        if (timeLeft <= 0) return;
+
+        const interval = setInterval(() => {
+          setTimeLeft(prev => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }, [timeLeft]);
+
+      const generateOTP = () => {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        setOtp(code);
+        setTimeLeft(5);
+      };
+
+      return (
+        <div className="container">
+          <h1 id="otp-title">OTP Generator</h1>
+
+          <h2 id="otp-display">
+            {otp ? otp : "Click 'Generate OTP' to get a code"}
+          </h2>
+
+          <p id="otp-timer" aria-live="polite">
+            {timeLeft > 0 && `Expires in: ${timeLeft} seconds`}
+            {timeLeft === 0 && otp && "OTP expired. Click the button to generate a new OTP."}
+          </p>
+
+          <button
+            id="generate-otp-button"
+            onClick={generateOTP}
+            disabled={timeLeft > 0}
+          >
+            Generate OTP
+          </button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<OTPGenerator />);
+  </script>
+</body>
+</html>
